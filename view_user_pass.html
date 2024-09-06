@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>View My Pass</title>
+</head>
+<body>
+    <h1>My Bus Pass</h1>
+    <ul>
+        {% for pass in passes %}
+            <li>Pass ID: {{ pass.pass_id }} - Status: {{ pass.status }}</li>
+        {% endfor %}
+    </ul>
+    <a href="{% url 'user_dashboard' %}">Back to Dashboard</a>
+</body>
+</html>

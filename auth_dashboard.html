@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #333;
+            padding: 10px;
+            color: white;
+        }
+
+        .nav h1 {
+            margin: 0;
+        }
+
+        .nav .dropdown {
+            position: relative;
+            display: inline-block;
+            margin-right: 20px;
+        }
+
+        .nav .dropbtn {
+            background-color: #333;
+            color: white;
+            padding: 10px;
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .nav .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: white;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .nav .dropdown-content a {
+            color: black;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            transition: background-color 0.3s ease;
+        }
+
+        .nav .dropdown-content a:hover {
+            background-color: #f1f1f1;
+        }
+
+        .nav .dropdown:hover .dropdown-content {
+            display: block;
+        }
+
+        .container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        .box {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            width: 45%;
+        }
+
+        h2 {
+            color: #555;
+            margin-bottom: 10px;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        li {
+            margin-bottom: 10px;
+            font-size: 16px;
+            color: #333;
+        }
+
+        a {
+            text-decoration: none;
+            color: #4CAF50;
+            margin-left: 10px;
+        }
+
+        a:hover {
+            color: #45a049;
+        }
+
+        .approve {
+            color: green;
+        }
+
+        .reject {
+            color: red;
+        }
+
+        .details-box {
+            display: none;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .search-bar {
+            margin: 20px 0; /* Add margin to create gap between nav and search bar */
+            text-align: center;
+        }
+
+        .search-bar input {
+            padding: 10px;
+            width: 50%;
+            font-size: 16px;
+        }
+
+        .filter-bar {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .filter-bar select {
+            padding: 10px;
+            font-size: 16px;
+        }
+
+        .search-label {
+            margin-right: 10px;
+            font-size: 16px;
+        }
+    </style>
+    <script>
+        function showDetails(id, section) {
+            document.querySelectorAll('.details-box').forEach(function(box) {
+                box.style.display = 'none';
+            });
+            document.getElementById('details-' + section + '-' + id).style.display = 'block';
+        }
+
+        function hideDetails() {
+            document.querySelectorAll('.details-box').forEach(function(box) {
+                box.style.display = 'none';
+            });
+            document.querySelector('.container').style.display = 'flex';
+        }
+
+        function searchPasses() {
+            const searchInput = document.getElementById('searchInput').value.toLowerCase();
+            const pendingPasses = document.querySelectorAll('#pendingPasses li');
+            const viewedPasses = document.querySelectorAll('#viewedPasses li');
+
+            pendingPasses.forEach(pass => {
+                const passText = pass.textContent.toLowerCase();
+                pass.style.display = passText.includes(searchInput) ? '' : 'none';
+            });
+
+            viewedPasses.forEach(pass => {
+                const passText = pass.textContent.toLowerCase();
+                pass.style.display = passText.includes(searchInput) ? '' : 'none';
+            });
+        }
+
+        function filterPasses() {
+            const filterOption = document.getElementById('filterOption').value;
+            const passes = document.querySelectorAll('.box ul li');
+
+            passes.forEach(pass => {
+                pass.style.display = (filterOption === 'All' || pass.textContent.includes(filterOption)) ? '' : 'none';
+            });
+        }
+
+        function exportData(format) {
+            const url = "{% url 'export_pass_data' 'format_placeholder' %}".replace('format_placeholder', format);
+            window.location.href = url;
+        }
+    </script>
+</head>
+<body>
+    <div class="nav">
+        <h1>Admin Dashboard</h1>
+        <div class="dropdown">
+            <button class="dropbtn">Export</button>
+            <div class="dropdown-content">
+                <a href="javascript:void(0);" onclick="exportData('pdf')">Export as PDF</a>
+                <a href="javascript:void(0);" onclick="exportData('csv')">Export as CSV</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="search-bar">
+        <label class="search-label" for="searchInput">Search:</label>
+        <input type="text" id="searchInput" onkeyup="searchPasses()" placeholder="Search for passes...">
+    </div>
+
+    <div class="filter-bar">
+        <select id="filterOption" onchange="filterPasses()">
+            <option value="All">All</option>
+            <option value="Accepted">Accepted</option>
+            <option value="Rejected">Rejected</option>
+            <option value="Pending">Pending</option>
+        </select>
+    </div>
+
+    <div class="container">
+        <div class="box">
+            <h2>Pending Passes</h2>
+            <ul id="pendingPasses">
+                {% for pass in pending_passes %}
+                    <li>{{ pass.full_name }} - {{ pass.pass_id }} 
+                        <a href="{% url 'update_pass_status' pass.id 'Accepted' %}" class="approve">Approve</a> | 
+                        <a href="{% url 'update_pass_status' pass.id 'Rejected' %}" class="reject">Reject</a> |
+                        <a href="javascript:void(0);" onclick="showDetails('{{ pass.id }}', 'pending')">Details</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="box">
+            <h2>Viewed Passes</h2>
+            <ul id="viewedPasses">
+                {% for pass in viewed_passes %}
+                    <li>{{ pass.full_name }} - {{ pass.pass_id }} - {{ pass.status }} 
+                        <a href="javascript:void(0);" onclick="showDetails('{{ pass.id }}', 'viewed')">Details</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    {% for pass in pending_passes %}
+    <div id="details-pending-{{ pass.id }}" class="details-box">
+        <h2>Pending Pass Details</h2>
+        <p><strong>Full Name:</strong> {{ pass.full_name }}</p>
+        <p><strong>Pass ID:</strong> {{ pass.pass_id }}</p>
+        <p><strong>From Place:</strong> {{ pass.from_place }}</p>
+        <p><strong>To Place:</strong> {{ pass.to_place }}</p>
+        <p><strong>College Name:</strong> {{ pass.college }}</p>
+        <p><strong>UPI ID :</strong> {{ pass.upi_id }}</p>
+        <p><strong>Transaction ID :</strong> {{ pass.transaction_id }}</p>
+        <a href="javascript:void(0);" onclick="hideDetails()">Back</a>
+    </div>
+    {% endfor %}
+
+    {% for pass in viewed_passes %}
+    <div id="details-viewed-{{ pass.id }}" class="details-box">
+        <h2>Viewed Pass Details</h2>
+        <p><strong>Full Name:</strong> {{ pass.full_name }}</p>
+        <p><strong>Pass ID:</strong> {{ pass.pass_id }}</p>
+        <p><strong>From Place:</strong> {{ pass.from_place }}</p>
+        <p><strong>To Place:</strong> {{ pass.to_place }}</p>
+        <p><strong>College Name:</strong> {{ pass.college }}</p>
+        <a href="javascript:void(0);" onclick="hideDetails()">Back</a>
+    </div>
+    {% endfor %}
+</body>
+</html>

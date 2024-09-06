@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Register</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f7f7f7;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+            box-sizing: border-box;
+        }
+        h1 {
+            margin-bottom: 20px;
+            font-size: 24px;
+            text-align: center;
+            color: #333;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+        form p {
+            margin-bottom: 15px;
+            display: none; /* Initially hide validation text */
+        }
+        form label {
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        form input[type="text"],
+        form input[type="email"],
+        form input[type="password"],
+        form input[type="number"],
+        form select,
+        form textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        form button {
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+            margin-top: 10px;
+        }
+        form button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var inputs = document.querySelectorAll("input");
+
+            inputs.forEach(function(input) {
+                input.addEventListener("input", function() {
+                    var nextElement = input.nextElementSibling;
+                    if (nextElement && nextElement.tagName === "P") {
+                        nextElement.style.display = "block";
+                    }
+                });
+            });
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>Register</h1>
+        <form method="POST">
+            {% csrf_token %}
+            <label for="id_username">Username:</label>
+            {{ form.username }}
+            <p>Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.</p>
+            <label for="id_email">Email:</label>
+            {{ form.email }}
+            <p></p> <!-- Add a placeholder for potential email validation text -->
+            <label for="id_password1">Password:</label>
+            {{ form.password1 }}
+            <p>
+                <ul>
+                    <li>Your password can’t be too similar to your other personal information.</li>
+                    <li>Your password must contain at least 8 characters.</li>
+                    <li>Your password can’t be a commonly used password.</li>
+                    <li>Your password can’t be entirely numeric.</li>
+                </ul>
+            </p>
+            <label for="id_password2">Password confirmation:</label>
+            {{ form.password2 }}
+            <p>Enter the same password as before, for verification.</p>
+            <button type="submit">Register</button>
+        </form>
+    </div>
+</body>
+</html>
